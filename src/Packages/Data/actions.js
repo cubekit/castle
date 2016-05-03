@@ -53,6 +53,17 @@ export function fetch(params, asyncParams = {}) {
 }
 
 /**
+ * Takes a migration, runs it, and applies its changes
+ * when it has done.
+ *
+ * @param {Packages.Data.MutationBase} mutation
+ * @param {Object} [params]
+ */
+export function runMutation(mutation, params) {
+    return mutation.asAction(params)
+}
+
+/**
  * Clear all records for the given name in the app state.
  *
  * @param params
@@ -268,7 +279,7 @@ export function store(params) {
  * contain a NEW ID, which will replace the current
  * after update.
  *
- * @param {string} params
+ * @param {Object} params
  * @param {string} params.name Name of the entity
  * @param {Object} params.data New values
  * @param {Object} params.id Current ID of the record to update

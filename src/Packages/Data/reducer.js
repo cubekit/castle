@@ -56,16 +56,16 @@ function dataReducer(state = {
             })
 
         case '@data/UPDATE':
+            const { content } = state
+            const { payload } = action
+
             return update(state, {
                 content: {
-                    $set: _.map(state.content, (data) => {
-                        const idToUpdate = action.payload.id
-                        const newValues = action.payload.data
-                        return (data.id == idToUpdate)
-                            ? { ...data, ...newValues }
-                            : data
-                    })
+                    $set: _.isArray(content)
+                        ? _updateArrayContent(content, payload)
+                        : _updateObjectContent(content, payload),
                 },
+
                 version: { $set: state.version + 1 },
             })
 
@@ -82,6 +82,22 @@ function dataReducer(state = {
         default:
             return state
     }
+}
+
+function _updateArrayContent(content, payload) {
+    const idToUpdate = payload.id
+    const newValues = payload.data
+
+    return _.map(content, (data) => {
+        return (data.id == idToUpdate)
+            ? { ...data, ...newValues }
+            : data
+    })
+}
+
+function _updateObjectContent(content, payload) {
+    const newValues = payload.data
+    return _.merge({}, content, newValues)
 }
 
 export default function dataIndexReducer(state = {
